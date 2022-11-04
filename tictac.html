@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="tictac.css">
+	<meta charset="utf-8">
+</head>
+<body>
+	<main class="background">
+		<section class="title">
+			<h1 style="color: grey">Tic Tac Toe</h1>
+		</section>
+		<section class="display">
+			Player <span class="display-player playerX">X</span>'s turn
+		</section>
+		<section class="container">
+			<div class="tile"></div>
+			<div class="tile"></div>
+			<div class="tile"></div>
+			<div class="tile"></div>
+			<div class="tile"></div>
+			<div class="tile"></div>
+			<div class="tile"></div>
+			<div class="tile"></div>
+			<div class="tile"></div>
+		</section>
+		<section class="display announcer hide"></section>
+		<section class="controls">
+			<button id="reset">Reset</button>
+		</section>
+	</main>
+	<script type="text/javascript">
+		window.addEventListener('DOMContentLoaded' , () => {
+			const tiles = Array.from(document.querySelectorAll('.tile'));
+			const playerDisplay = document.querySelector('.display-player');
+			const resetButton = document.querySelector('#reset');
+			const announcer = document.querySelector('.announcer');
+
+			let board = ['','','','','','','','','' ];
+			let currentPlayer = 'X';
+			let isGameActive = true;
+
+			const PLAYERX_WON = 'PLAYERX_WON';
+			const PLAYERO_WON = 'PLAYERO_WON';
+			const TIE = 'TIE';
+
+			const WinningConditions = [
+				[0,1,2],
+				[3,4,5],
+				[6,7,8],
+				[0,3,6],
+				[1,4,7],
+				[2,5,8],
+				[0,4,8],
+				[2,4,6],
+			];
+
+			function handResultValidation() {
+				let roundWOn = false
+				for (let i = 0; i <= 7; i++) {
+					const winnerCondition = WinningConditions[i];
+					const a = board[winnerCondition[0]];
+					const b = board[winnerCondition[1]];
+					const c = board[winnerCondition[2]];
+
+					if (a === '' || b === '' || c === '') {
+						continue;
+					}
+
+					if (a === b && b === c) {
+						roundWOn = true;
+						break;
+					}
+				}
+
+					if (roundWOn) {
+						announce(currentPlayer === 'X' ? PLAYERX_WON : PLAYERO_WON);
+						isGameActive = false;
+						return;
+					}
+					if (!board.includes('')) {
+						announce(TIE);
+					}
+				}
+				const announce = (type) => {
+					switch(type) {
+						case PLAYERO_WON:
+							announcer.innerHTML = 'PLayer <span class="playerO">O</span> won';
+					break;
+					case PLAYERX_WON:
+							announcer.innerHTML = 'PLayer <span class="playerX">X</span> won';
+					break;
+					 case TIE:
+					 	announcer.innerText = 'Tie';
+					 break;
+					}
+					announcer.classList.remove('hide');
+
+				}
+				const isValidAction = (tile) => {
+					if (tile.innerText === 'X' || tile.innerText === '0') {
+							return false;
+					}
+						return true;
+				}
+
+				const updateBoard = (index) => {
+					board[index] = currentPlayer;
+				}
+
+				const changePlayer = () => {
+					playerDisplay.classList.remove(`player${currentPlayer}`);
+					currentPlayer  = currentPlayer === 'X' ? 'O' : 'X';
+					playerDisplay.innerText = currentPlayer;
+					playerDisplay.classList.add(`player${currentPlayer}`);
+				}
+
+				const userAction = (tile, index) => {
+					if (isValidAction(tile) && isGameActive) {
+						tile.innerText = currentPlayer;
+						tile.classList.add(`player${currentPlayer}`);
+					updateBoard(index);
+					handResultValidation();
+					changePlayer();
+					}
+				}
+
+				tiles.forEach((tile, index) => {
+					tile.addEventListener('click', () => userAction(tile, index))
+				});
+
+				resetButton.addEventListener('click', resetButton);
+		})
+	</script>
+</body>
+</html>
